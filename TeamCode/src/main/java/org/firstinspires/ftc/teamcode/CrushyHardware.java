@@ -33,11 +33,17 @@ public class CrushyHardware
     public DcMotor rightFront = null;
     public DcMotor rightBack = null;
     public DcMotor particleCollector = null;
-    public DcMotor particleShooter = null;
-    public DcMotor leftCapBall = null;
-    public DcMotor rightCapBall = null;
+    public DcMotor leftShooter = null;
+    public DcMotor rightShooter = null;
+
+    //public DcMotor particleShooter = null;
+    //public DcMotor leftCapBall = null;
+    //public DcMotor rightCapBall = null;
     //public Servo    leftClaw    = null;
     //public Servo    rightClaw   = null;
+
+    public Servo leftServo = null;
+    public Servo rightServo = null;
 
     public ModernRoboticsI2cGyro gyroSensor = null;
 
@@ -64,24 +70,31 @@ public class CrushyHardware
         leftBack = hwMap.dcMotor.get("leftBack");
         rightFront = hwMap.dcMotor.get("rightFront");
         rightBack = hwMap.dcMotor.get("rightBack");
-        particleCollector = hwMap.dcMotor.get("particleCollector");
-        particleShooter = hwMap.dcMotor.get("particleShooter");
-        leftCapBall = hwMap.dcMotor.get("leftCapBall");
-        rightCapBall = hwMap.dcMotor.get("RightCapBall");
+        particleCollector = hwMap.dcMotor.get("particleIntake");
+        leftShooter = hwMap.dcMotor.get("leftShooter");
+        rightShooter = hwMap.dcMotor.get("rightShooter");
+        leftServo = hwMap.servo.get("leftServo");
+        rightServo = hwMap.servo.get("rightServo");
         //armMotor    = hwMap.dcMotor.get("left_arm");
         leftFront.setDirection(DcMotor.Direction.FORWARD); // Set to REVERSE if using AndyMark motors
         leftBack.setDirection(DcMotor.Direction.FORWARD);// Set to FORWARD if using AndyMark motors
         rightFront.setDirection(DcMotor.Direction.REVERSE); // Set to REVERSE if using AndyMark motors
         rightBack.setDirection(DcMotor.Direction.REVERSE);// Set to FORWARD if using AndyMark motors
         particleCollector.setDirection(DcMotor.Direction.REVERSE);
-        particleShooter.setDirection(DcMotor.Direction.REVERSE);
-        rightCapBall.setDirection(DcMotor.Direction.REVERSE);
-        leftCapBall.setDirection(DcMotor.Direction.FORWARD);
+        leftShooter.setDirection(DcMotor.Direction.FORWARD);
+        rightShooter.setDirection(DcMotor.Direction.REVERSE);
+
+        //particleShooter.setDirection(DcMotor.Direction.REVERSE);
+        //rightCapBall.setDirection(DcMotor.Direction.REVERSE);
+        //leftCapBall.setDirection(DcMotor.Direction.FORWARD);
         // Set all motors to zero power
         leftFront.setPower(0);
         leftBack.setPower(0);
         rightFront.setPower(0);
         rightBack.setPower(0);
+        particleCollector.setPower(0);
+        leftShooter.setPower(0);
+        rightShooter.setPower(0);
         //armMotor.setPower(0);
 
         // Set all motors to run without encoders.
@@ -90,7 +103,13 @@ public class CrushyHardware
         leftBack.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         rightFront.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         rightBack.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        particleCollector.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        leftShooter.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        rightShooter.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         //armMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+        leftServo.setPosition(0.5);
+        rightServo.setPosition(0.5);
 
         // Define and initialize the gyro sensor.
         gyroSensor = (ModernRoboticsI2cGyro)hwMap.gyroSensor.get("gyro");

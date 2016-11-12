@@ -68,11 +68,26 @@ public class DriverControl extends LinearOpMode {
         double left;
         double right;
         double max;
+        double leftPower;
+        double rightPower;
+        double speedControl = 0.5;
+        boolean lbPressed = false;
+        boolean rbPressed = false;
+        double collectorPower = -1.0;
+        boolean bPressed = false;
 
         /* Initialize the hardware variables.
          * The init() method of the hardware class does all the work here
          */
         robot.init(hardwareMap);
+
+        robot.gyroSensor.calibrate();
+
+        // make sure the gyro is calibrated.
+        while (!isStopRequested() && robot.gyroSensor.isCalibrating())  {
+            sleep(50);
+            idle();
+        }
 
         // Send telemetry message to signify robot waiting;
         telemetry.addData("Say", "Hello Driver");    //
@@ -84,24 +99,120 @@ public class DriverControl extends LinearOpMode {
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
 
+            if (gamepad1.left_bumper)
+            {
+                if(!lbPressed)
+                {
+                    if(speedControl < .95)
+                    {
+                        speedControl = speedControl + 0.1;
+                    }
+                    lbPressed = true;
+                }
+            }
+            else
+            {
+                lbPressed = false;
+            }
+
+            if (gamepad1.right_bumper)
+            {
+                if(!rbPressed)
+                {
+                    if(speedControl > 0.05)
+                    {
+                        speedControl = speedControl - 0.1;
+                    }
+                    rbPressed = true;
+                }
+            }
+            else
+            {
+                rbPressed = false;
+            }
+
+
             // Run wheels in POV mode (note: The joystick goes negative when pushed forwards, so negate it)
             // In this mode the Left stick moves the robot fwd and back, the Right stick turns left and right.
             left = -gamepad1.left_stick_y;
-            right = -gamepad1.right_stick_y;
+            right = gamepad1.right_stick_x;
+
+            leftPower = left;
+            rightPower = left;
+
+            leftPower = leftPower + right;
+            rightPower = rightPower - right;
 
             // Normalize the values so neither exceed +/- 1.0
-            max = Math.max(Math.abs(left), Math.abs(right));
+            max = Math.max(Math.abs(leftPower), Math.abs(rightPower));
             if (max > 1.0)
             {
-                left /= max;
-                right /= max;
+                leftPower /= max;
+                rightPower /= max;
+            }
+            robot.leftFront.setPower(leftPower * speedControl);
+            robot.leftBack.setPower(leftPower * speedControl);
+            robot.rightFront.setPower(rightPower * speedControl);
+            robot.rightBack.setPower(rightPower * speedControl);
+
+            if (gamepad2.b)
+            {
+                if (!bPressed)
+                {
+                    collectorPower = collectorPower * -1.0;
+
+                    if (robot.particleCollector.getPower() != 0.0)
+                    {
+                        robot.particleCollector.setPower(collectorPower);
+                    }
+
+                    bPressed = true;
+                }
+            }
+            else
+            {
+                bPressed = false;
             }
 
-            robot.leftFront.setPower(left);
-            robot.leftBack.setPower(left);
-            robot.rightFront.setPower(right);
-            robot.rightBack.setPower(right);
+            if (gamepad2.left_trigger > 0)
+            {
+                robot.particleCollector.setPower(collectorPower);
+            }
 
+            if (gamepad2.left_bumper)
+            {
+                robot.particleCollector.setPower(0);
+            }
+
+            if (gamepad2.right_trigger > 0)
+            {
+                robot.leftShooter.setPower(1.0);
+                robot.rightShooter.setPower(1.0);
+            }
+
+            if (gamepad2.right_bumper)
+            {
+                robot.leftShooter.setPower(0);
+                robot.rightShooter.setPower(0);
+            }
+
+            if (gamepad2.left_stick_y < -0.1)
+            {
+                robot.leftServo.setPosition(0.0);
+                robot.rightServo.setPosition(1.0);
+            }
+            else if (gamepad2.left_stick_y > 0.1)
+            {
+                robot.leftServo.setPosition(1.0);
+                robot.rightServo.setPosition(0.0);
+            }
+            else
+            {
+                robot.leftServo.setPosition(0.5);
+                robot.rightServo.setPosition(0.5);
+            }
+
+            int zValue = robot.gyroSensor.getIntegratedZValue();
             // Use gamepad left & right Bumpers to open and close the claw
             //if (gamepad1.right_bumper)
             //    clawOffset += CLAW_SPEED;
@@ -125,10 +236,18 @@ public class DriverControl extends LinearOpMode {
             //telemetry.addData("claw",  "Offset = %.2f", clawOffset);
             telemetry.addData("left",  "%.2f", left);
             telemetry.addData("right", "%.2f", right);
+            telemetry.addData("speed",  "%.2f", speedControl);
+            telemetry.addData("zValue", zValue);
             telemetry.update();
 
             // Pause for metronome tick.  40 mS each cycle = update 25 times a second.
             robot.waitForTick(40);
         }
+    }
+
+    public void turnRobot(int direction)
+    {
+        int current = robot.gyroSensor.getHeading();
+
     }
 }
