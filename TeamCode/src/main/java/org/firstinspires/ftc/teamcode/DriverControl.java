@@ -84,10 +84,10 @@ public class DriverControl extends LinearOpMode {
         robot.gyroSensor.calibrate();
 
         // make sure the gyro is calibrated.
-        while (!isStopRequested() && robot.gyroSensor.isCalibrating())  {
-            sleep(50);
-            idle();
-        }
+        //while (!isStopRequested() && robot.gyroSensor.isCalibrating())  {
+        //    sleep(50);
+        //    idle();
+        //}
 
         // Send telemetry message to signify robot waiting;
         telemetry.addData("Say", "Hello Driver");    //
@@ -150,6 +150,7 @@ public class DriverControl extends LinearOpMode {
                 leftPower /= max;
                 rightPower /= max;
             }
+
             robot.leftFront.setPower(leftPower * speedControl);
             robot.leftBack.setPower(leftPower * speedControl);
             robot.rightFront.setPower(rightPower * speedControl);
