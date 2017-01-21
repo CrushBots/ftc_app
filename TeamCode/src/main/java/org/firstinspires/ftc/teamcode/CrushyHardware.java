@@ -2,7 +2,6 @@
 
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cGyro;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -35,7 +34,7 @@ public class CrushyHardware
     public DcMotor particleCollector = null;
     public DcMotor leftShooter = null;
     public DcMotor rightShooter = null;
-    public DcMotor sideBeakon = null;
+    public DcMotor sideBeacon = null;
 
     //public DcMotor particleShooter = null;
     //public DcMotor leftCapBall = null;
@@ -74,7 +73,7 @@ public class CrushyHardware
         particleCollector = hwMap.dcMotor.get("particleIntake");
         leftShooter = hwMap.dcMotor.get("leftShooter");
         rightShooter = hwMap.dcMotor.get("rightShooter");
-        sideBeakon = hwMap.dcMotor.get("sideBeakon");
+        sideBeacon = hwMap.dcMotor.get("sideBeacon");
         leftServo = hwMap.servo.get("leftServo");
         rightServo = hwMap.servo.get("rightServo");
         //armMotor    = hwMap.dcMotor.get("left_arm");
@@ -83,9 +82,9 @@ public class CrushyHardware
         rightFront.setDirection(DcMotor.Direction.REVERSE); // Set to REVERSE if using AndyMark motors
         rightBack.setDirection(DcMotor.Direction.REVERSE);// Set to FORWARD if using AndyMark motors
         particleCollector.setDirection(DcMotor.Direction.REVERSE);
-        leftShooter.setDirection(DcMotor.Direction.REVERSE);
-        rightShooter.setDirection(DcMotor.Direction.FORWARD);
-        sideBeakon.setDirection(DcMotor.Direction.FORWARD);
+        leftShooter.setDirection(DcMotor.Direction.FORWARD);
+        rightShooter.setDirection(DcMotor.Direction.REVERSE);
+        sideBeacon.setDirection(DcMotor.Direction.REVERSE);
 
         //particleShooter.setDirection(DcMotor.Direction.REVERSE);
         //rightCapBall.setDirection(DcMotor.Direction.REVERSE);
@@ -98,7 +97,7 @@ public class CrushyHardware
         particleCollector.setPower(0);
         leftShooter.setPower(0);
         rightShooter.setPower(0);
-        sideBeakon.setPower(0);
+        sideBeacon.setPower(0);
         //armMotor.setPower(0);
 
         // Set all motors to run without encoders.
@@ -110,7 +109,7 @@ public class CrushyHardware
         particleCollector.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         leftShooter.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         rightShooter.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        sideBeakon.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        sideBeacon.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         //armMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
         leftServo.setPosition(0.5);

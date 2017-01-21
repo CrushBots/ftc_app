@@ -165,15 +165,15 @@ public class DriverControl extends CommonFunctions
          */
         if (gamepad2.right_stick_y > 0.1)
         {
-            robot.sideBeakon.setPower(0.1);
+            robot.sideBeacon.setPower(0.2);
         }
-        else if (gamepad2.right_stick_y > -0.1)
+        else if (gamepad2.right_stick_y < -0.1)
         {
-            robot.sideBeakon.setPower(-0.1);
+            robot.sideBeacon.setPower(-0.2);
         }
         else
         {
-            robot.sideBeakon.setPower(0.0);
+            robot.sideBeacon.setPower(0.0);
         }
 
         /*
@@ -193,7 +193,7 @@ public class DriverControl extends CommonFunctions
 
         if (shooterStarted)
         {
-            shooterPower = Range.clip(shooterPower + shooterChangePower, 0, 1.0);
+            shooterPower = Range.clip(shooterPower + shooterChangePower, 0, 0.5);
             robot.leftShooter.setPower(shooterPower);
             robot.rightShooter.setPower(shooterPower);
         }
@@ -202,13 +202,6 @@ public class DriverControl extends CommonFunctions
             shooterPower = Range.clip(shooterPower - shooterChangePower, 0, 1.0);
             robot.leftShooter.setPower(shooterPower);
             robot.rightShooter.setPower(shooterPower);
-        }
-
-
-       {
-            // What does this do?
-            //robot.leftServo.setPosition(0.5);
-            //robot.rightServo.setPosition(0.5);
         }
     }
 }
