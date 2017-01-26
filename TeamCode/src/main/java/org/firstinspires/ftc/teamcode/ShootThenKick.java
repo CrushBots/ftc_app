@@ -33,12 +33,9 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.hardware.LightSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
-
-import org.firstinspires.ftc.robotcontroller.external.samples.HardwarePushbot;
+import com.qualcomm.robotcore.util.Range;
 
 /**
  * This file illustrates the concept of driving up to a line and then stopping.
@@ -60,12 +57,13 @@ import org.firstinspires.ftc.robotcontroller.external.samples.HardwarePushbot;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
-@Autonomous(name="autonomous: red ball", group="Crushy")
+@Autonomous(name="ShootThenKick", group="Crushy")
 //@Disabled
-public class AutonomousRedBall extends LinearOpMode {
+public class ShootThenKick extends LinearOpMode {
 
     /* Declare OpMode members. */
-    CrushyHardware         robot   = new CrushyHardware();   // Use a Pushbot's hardware
+
+    CrushyHardware robot = new CrushyHardware();   // Use a Crushy's hardware
     private ElapsedTime runtime = new ElapsedTime();
 
 
@@ -87,22 +85,72 @@ public class AutonomousRedBall extends LinearOpMode {
 
         }
 
-        // Step 1:  Drive forward for 1 seconds
-        double speed = 1.0;
+        // Step 1:  Put beacon arms out
+        robot.leftServo.setPosition(0.0);
+        robot.rightServo.setPosition(1.0);
+
+        // Step 2:  Drive forward
+        double speed = -0.5;
         robot.leftFront.setPower(speed);
         robot.leftBack.setPower(speed);
         robot.rightFront.setPower(speed);
         robot.rightBack.setPower(speed);
         runtime.reset();
-        while (opModeIsActive() && (runtime.seconds() < 2.0)) {
+        while (opModeIsActive() && (runtime.seconds() < 0.7)) {
             telemetry.addData("Path", "Leg 1: %2.5f S Elapsed", runtime.seconds());
             telemetry.update();
         }
-
         robot.leftFront.setPower(0);
         robot.leftBack.setPower(0);
         robot.rightFront.setPower(0);
         robot.rightBack.setPower(0);
+
+        // Step 3:  Ramp up Fly Wheel
+        double shooterPower = 0;
+        while (shooterPower < 0.52) {
+            shooterPower = Range.clip(shooterPower + 0.05, 0, 0.52);
+            robot.leftShooter.setPower(shooterPower);
+            robot.rightShooter.setPower(shooterPower);
+        }
+        sleep(3000);
+
+        // Step 4:  Run Collector - Ball 1
+        robot.particleCollector.setPower(1.0);
+        sleep(500);
+        robot.particleCollector.setPower(0.0);
+
+        // Step 5:  Ramp up Fly Wheel
+        while (shooterPower < 0.52) {
+            shooterPower = Range.clip(shooterPower + 0.05, 0, 0.52);
+            robot.leftShooter.setPower(shooterPower);
+            robot.rightShooter.setPower(shooterPower);
+        }
+        // Step 6:  Run Collector - Ball 2
+        robot.particleCollector.setPower(1.0);
+        sleep(1000);
+        robot.particleCollector.setPower(0.0);
+
+        // Step 7:  Ramp Down Fly Wheel
+        while (shooterPower > 0) {
+            shooterPower = Range.clip(shooterPower - 0.05, 0, 0.55);
+            robot.leftShooter.setPower(shooterPower);
+            robot.rightShooter.setPower(shooterPower);
+        }
+
+        // Step 8:  Drive Forward
+        robot.leftFront.setPower(speed);
+        robot.leftBack.setPower(speed);
+        robot.rightFront.setPower(speed);
+        robot.rightBack.setPower(speed);
+        sleep(1500);
+        robot.leftFront.setPower(0.0);
+        robot.leftBack.setPower(0.0);
+        robot.rightFront.setPower(0.0);
+        robot.rightBack.setPower(0.0);
+
+        // Step 9:  Pull Beacon Arms In
+        robot.leftServo.setPosition(1.0);
+        robot.rightServo.setPosition(0.0);
 
     }
 }

@@ -72,15 +72,15 @@ public class DriverControl extends CommonFunctions
             rightBumperPressed = false;
         }
 
-        // Run wheels in POV mode (note: The joystick goes negative when pushed forwards, so negate it)
-        // In this mode the Left stick moves the robot fwd and back, the Right stick turns left and right.
+        /*
+         * Left Joy Stick - Forward / Reverse
+         * Right Joy Stick - Left / Right
+         */
         left = -gamepad1.left_stick_y;
         right = gamepad1.right_stick_x;
 
-
         leftPower = left;
         rightPower = left;
-
         leftPower = leftPower + right;
         rightPower = rightPower - right;
 
@@ -91,7 +91,6 @@ public class DriverControl extends CommonFunctions
             leftPower /= max;
             rightPower /= max;
         }
-
         robot.leftFront.setPower(leftPower * speedControl);
         robot.leftBack.setPower(leftPower * speedControl);
         robot.rightFront.setPower(rightPower * speedControl);
@@ -110,33 +109,37 @@ public class DriverControl extends CommonFunctions
         }
 
         /*
-         * Right Bumper - Shooter
+         * Right Bumper - Shooter        // Step 10:  Pull Beacon Arms In
+        robot.leftServo.setPosition(1.0);
+        robot.rightServo.setPosition(0.0);
+
          */
         if (!rightBumperIsPressed && gamepad2.right_bumper)
         {
-            // Right Bumper is pressed.
+            // Right Bumper is pressed - start shooter
             shooterStarted = !shooterStarted;
             rightBumperIsPressed = true;
         }
         else if (rightBumperIsPressed && !gamepad2.right_bumper)
         {
-            // Right Bumper is released.
+            // Right Bumper is released - stop shooter
             rightBumperIsPressed = false;
         }
 
         if (shooterStarted)
         {
-                shooterPower = Range.clip(shooterPower + shooterChangePower, 0, 1.0);
-                robot.leftShooter.setPower(shooterPower);
-                robot.rightShooter.setPower(shooterPower);
+            // Ramp Up the Shooter
+            shooterPower = Range.clip(shooterPower + shooterChangePower, 0, 1.0);
+            robot.leftShooter.setPower(shooterPower);
+            robot.rightShooter.setPower(shooterPower);
         }
         else
         {
+            // Ramp Down the Shooter
             shooterPower = Range.clip(shooterPower - shooterChangePower, 0, 1.0);
             robot.leftShooter.setPower(shooterPower);
             robot.rightShooter.setPower(shooterPower);
         }
-
 
         if (gamepad2.b)
         {
@@ -193,7 +196,7 @@ public class DriverControl extends CommonFunctions
 
         if (shooterStarted)
         {
-            shooterPower = Range.clip(shooterPower + shooterChangePower, 0, 0.5);
+            shooterPower = Range.clip(shooterPower + shooterChangePower, 0, 0.55);
             robot.leftShooter.setPower(shooterPower);
             robot.rightShooter.setPower(shooterPower);
         }
