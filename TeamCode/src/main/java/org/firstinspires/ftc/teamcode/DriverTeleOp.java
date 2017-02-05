@@ -7,10 +7,10 @@ import com.qualcomm.robotcore.util.Range;
  * Created by CrushBots for the 2016-2017 FTC season
  */
 
-@TeleOp(name="Driver Control", group="CrushBots")
+@TeleOp(name="Driver TeleOp", group="CrushBots")
 //@Disabled
-public class DriverControl extends CommonFunctions
-{
+public class DriverTeleOp extends CommonFunctions {
+
     /* Declare members. */
     private double speedControl = 0.5;
     private boolean leftBumperPressed = false;
@@ -110,7 +110,7 @@ public class DriverControl extends CommonFunctions
 
         /*
          * Right Bumper - Shooter        // Step 10:  Pull Beacon Arms In
-        robot.leftServo.setPosition(1.0);
+        robot.BeaconArmsServo.setPosition(1.0);
         robot.rightServo.setPosition(0.0);
 
          */
@@ -153,14 +153,12 @@ public class DriverControl extends CommonFunctions
         if (gamepad2.left_stick_y < -0.1)
         {
             // Move arms out
-            robot.leftServo.setPosition(0.0);
-            robot.rightServo.setPosition(1.0);
+            robot.BeaconArmsServo.setPosition(0.0);
         }
         else if (gamepad2.left_stick_y > 0.1)
         {
             // Move arms in
-            robot.leftServo.setPosition(1.0);
-            robot.rightServo.setPosition(0.0);
+            robot.BeaconArmsServo.setPosition(1.0);
         }
 
         /*
@@ -168,15 +166,15 @@ public class DriverControl extends CommonFunctions
          */
         if (gamepad2.right_stick_y > 0.1)
         {
-            robot.sideBeacon.setPower(0.2);
+            //robot.sideBeacon.setPower(0.2);
         }
         else if (gamepad2.right_stick_y < -0.1)
         {
-            robot.sideBeacon.setPower(-0.2);
+            //robot.sideBeacon.setPower(-0.2);
         }
         else
         {
-            robot.sideBeacon.setPower(0.0);
+            //robot.sideBeacon.setPower(0.0);
         }
 
         /*
