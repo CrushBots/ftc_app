@@ -13,8 +13,6 @@ public class DriverTeleOp extends CommonFunctions {
 
     /* Declare members. */
     private double speedControl = 0.5;
-    private boolean leftBumperPressed = false;
-    private boolean rightBumperPressed = false;
 
     private static final double shooterChangePower = 0.05;
     private double shooterPower = 0.0;
@@ -37,39 +35,19 @@ public class DriverTeleOp extends CommonFunctions {
         /*
          * Left Bumper - Increase Speed
          */
-        if (gamepad1.left_bumper)
-        {
-            if(!leftBumperPressed)
-            {
-                if(speedControl < .95)
-                {
-                    speedControl = speedControl + 0.1;
-                }
-                leftBumperPressed = true;
-            }
-        }
-        else
-        {
-            leftBumperPressed = false;
+        if (gamepad1.left_bumper) {
+            speedControl = 0.95;
+        } else {
+            speedControl = 0.5;
         }
 
         /*
          * Right Bumper - Decrease Speed
          */
-        if (gamepad1.right_bumper)
-        {
-            if(!rightBumperPressed)
-            {
-                if(speedControl > 0.05)
-                {
-                    speedControl = speedControl - 0.1;
-                }
-                rightBumperPressed = true;
-            }
-        }
-        else
-        {
-            rightBumperPressed = false;
+        if (gamepad1.right_bumper) {
+                speedControl = 0.15;
+        } else {
+            speedControl = 0.5;
         }
 
         /*
@@ -91,10 +69,7 @@ public class DriverTeleOp extends CommonFunctions {
             leftPower /= max;
             rightPower /= max;
         }
-        robot.leftFront.setPower(leftPower * speedControl);
-        robot.leftBack.setPower(leftPower * speedControl);
-        robot.rightFront.setPower(rightPower * speedControl);
-        robot.rightBack.setPower(rightPower * speedControl);
+        robot.setDrivePower((leftPower * speedControl), (rightPower * speedControl));
 
         /*
          * Left Bumper - Collector
