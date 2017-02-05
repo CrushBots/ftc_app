@@ -1,32 +1,20 @@
  package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cGyro;
+import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
-
 import static java.lang.Thread.sleep;
 
-/**
- * This is NOT an opmode.
- *
- * This class can be used to define all the specific hardware for a single robot.
- * In this case that robot is a Pushbot.
- * See PushbotTeleopTank_Iterative and others classes starting with "Pushbot" for usage examples.
- *
- * This hardware class assumes the following device names have been configured on the robot:
- * Note:  All names are lower case and some have single spaces between words.
- *
- * Motor channel:  Left  drive motor:        "left_drive"
- * Motor channel:  Right drive motor:        "right_drive"
- * Motor channel:  Manipulator drive motor:  "left_arm"
- * Servo channel:  Servo to open left claw:  "left_hand"
- * Servo channel:  Servo to open right claw: "right_hand"
- */
-public class CrushyHardware
+ /**
+  * Created by CrushBots for the 2016-2017 FTC season
+  */
+
+ public class CrushyHardware
 {
-    /* Public OpMode members. */
+    /* Public members. */
     public DcMotor leftFront = null;
     public DcMotor leftBack = null;
     public DcMotor rightFront = null;
@@ -34,24 +22,14 @@ public class CrushyHardware
     public DcMotor particleCollector = null;
     public DcMotor leftShooter = null;
     public DcMotor rightShooter = null;
-    public DcMotor sideBeacon = null;
-
-    //public DcMotor particleShooter = null;
-    //public DcMotor leftCapBall = null;
-    //public DcMotor rightCapBall = null;
-    //public Servo    leftClaw    = null;
-    //public Servo    rightClaw   = null;
-
-    public Servo leftServo = null;
-    public Servo rightServo = null;
-
+    public Servo BeaconArmsServo = null;
     public ModernRoboticsI2cGyro gyroSensor = null;
+    public ColorSensor leftBeaconColorSensor = null;
+    public ColorSensor rightBeaconColorSensor = null;
+    public ColorSensor leftUnderColorSensor = null;
+    public ColorSensor rightUnderColorSensor = null;
 
-    //public static final double MID_SERVO       =  0.5 ;
-    //public static final double ARM_UP_POWER    =  0.45 ;
-    //public static final double ARM_DOWN_POWER  = -0.45 ;
-
-    /* local OpMode members. */
+    /* Local members. */
     HardwareMap hwMap = null;
     private ElapsedTime period  = new ElapsedTime();
 
@@ -62,10 +40,13 @@ public class CrushyHardware
 
     /* Initialize standard Hardware interfaces */
     public void init(HardwareMap ahwMap) {
+
         // Save reference to Hardware map
          hwMap = ahwMap;
 
-        // Define and Initialize Motors
+        /**
+         *  Define and Initialize Motors
+         */
         leftFront = hwMap.dcMotor.get("leftFront");
         leftBack = hwMap.dcMotor.get("leftBack");
         rightFront = hwMap.dcMotor.get("rightFront");
@@ -73,22 +54,15 @@ public class CrushyHardware
         particleCollector = hwMap.dcMotor.get("particleIntake");
         leftShooter = hwMap.dcMotor.get("leftShooter");
         rightShooter = hwMap.dcMotor.get("rightShooter");
-        sideBeacon = hwMap.dcMotor.get("sideBeacon");
-        leftServo = hwMap.servo.get("leftServo");
-        rightServo = hwMap.servo.get("rightServo");
-        //armMotor    = hwMap.dcMotor.get("left_arm");
-        leftFront.setDirection(DcMotor.Direction.FORWARD); // Set to REVERSE if using AndyMark motors
-        leftBack.setDirection(DcMotor.Direction.FORWARD);// Set to FORWARD if using AndyMark motors
-        rightFront.setDirection(DcMotor.Direction.REVERSE); // Set to REVERSE if using AndyMark motors
-        rightBack.setDirection(DcMotor.Direction.REVERSE);// Set to FORWARD if using AndyMark motors
+
+        leftFront.setDirection(DcMotor.Direction.REVERSE);
+        leftBack.setDirection(DcMotor.Direction.REVERSE);
+        rightFront.setDirection(DcMotor.Direction.FORWARD);
+        rightBack.setDirection(DcMotor.Direction.FORWARD);
         particleCollector.setDirection(DcMotor.Direction.REVERSE);
         leftShooter.setDirection(DcMotor.Direction.FORWARD);
         rightShooter.setDirection(DcMotor.Direction.REVERSE);
-        sideBeacon.setDirection(DcMotor.Direction.REVERSE);
 
-        //particleShooter.setDirection(DcMotor.Direction.REVERSE);
-        //rightCapBall.setDirection(DcMotor.Direction.REVERSE);
-        //leftCapBall.setDirection(DcMotor.Direction.FORWARD);
         // Set all motors to zero power
         leftFront.setPower(0);
         leftBack.setPower(0);
@@ -97,32 +71,65 @@ public class CrushyHardware
         particleCollector.setPower(0);
         leftShooter.setPower(0);
         rightShooter.setPower(0);
-        sideBeacon.setPower(0);
-        //armMotor.setPower(0);
 
-        // Set all motors to run without encoders.
-        // May want to use RUN_USING_ENCODERS if encoders are installed.
-        leftFront.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        leftBack.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        rightFront.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        rightBack.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        particleCollector.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        leftShooter.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        rightShooter.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        sideBeacon.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        //armMotor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        // Set all motors to run with or without encoders.
+        leftFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        leftBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightFront.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightBack.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        particleCollector.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER); // No Encoder
+        leftShooter.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        rightShooter.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
-        leftServo.setPosition(0.5);
-        rightServo.setPosition(0.5);
+        leftFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        leftBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        rightFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        rightBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        leftShooter.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        rightShooter.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-        // Define and initialize the gyro sensor.
-        gyroSensor = (ModernRoboticsI2cGyro)hwMap.gyroSensor.get("gyro");
+        leftFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        leftBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        rightFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        rightBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        leftShooter.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);  // coast to a stop
+        rightShooter.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
 
-        // Define and initialize ALL installed servos.
-        //leftClaw = hwMap.servo.get("left_hand");
-        //rightClaw = hwMap.servo.get("right_hand");
-        //leftClaw.setPosition(MID_SERVO);
-        //rightClaw.setPosition(MID_SERVO);
+        /**
+         *  Define and set start position on Servos
+         */
+        BeaconArmsServo = hwMap.servo.get("beaconArms");
+        BeaconArmsServo.setPosition(0.5);
+
+        /**
+         *  Define and calibrate the Adafruit IMU (Inertial Motion Unit) sensor
+         */
+        /*gyroSensor = (ModernRoboticsI2cGyro)hwMap.gyroSensor.get("gyro");
+        gyroSensor.calibrate();
+        while(gyroSensor.isCalibrating()){
+            // Wait for calibration to finish
+        }
+        gyroSensor.setHeadingMode(ModernRoboticsI2cGyro.HeadingMode.HEADING_CARDINAL);*/
+
+        /**
+         *  Define and setup Color sensors
+         */
+        leftBeaconColorSensor = hwMap.colorSensor.get("leftBeacon");
+        rightBeaconColorSensor = hwMap.colorSensor.get("rightBeacon");
+        leftUnderColorSensor = hwMap.colorSensor.get("leftUnder");
+        rightUnderColorSensor = hwMap.colorSensor.get("rightUnder");
+    }
+
+    public void setShooterPower (double power){
+        leftShooter.setPower(power);
+        rightShooter.setPower(power);
+    }
+
+    public void setDrivePower (double leftPower, double rightPower){
+        leftFront.setPower(leftPower);
+        leftBack.setPower(leftPower);
+        rightFront.setPower(rightPower);
+        rightBack.setPower(rightPower);
     }
 
     /***
@@ -150,4 +157,3 @@ public class CrushyHardware
         period.reset();
     }
 }
-
