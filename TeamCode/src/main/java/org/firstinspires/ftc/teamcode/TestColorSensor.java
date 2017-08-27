@@ -17,7 +17,33 @@ public class TestColorSensor extends CommonFunctions {
   @Override
   public void loop() {
 
-    robot.leftBeaconColorSensor.enableLed(true);
+    if (gamepad2.x){
+      robot.leftBeaconColorSensor.enableLed(true);
+    }
+    else {
+      robot.leftBeaconColorSensor.enableLed(false);
+    }
+
+    if (gamepad2.y){
+      robot.rightBeaconColorSensor.enableLed(true);
+    }
+    else {
+      robot.rightBeaconColorSensor.enableLed(false);
+    }
+
+    if (gamepad2.a){
+      robot.leftUnderColorSensor.enableLed(true);
+    }
+    else {
+      robot.leftUnderColorSensor.enableLed(false);
+    }
+
+    if (gamepad2.b){
+      robot.rightUnderColorSensor.enableLed(true);
+    }
+    else {
+      robot.rightUnderColorSensor.enableLed(false);
+    }
 
     Color.RGBToHSV(robot.leftBeaconColorSensor.red() * 8, robot.leftBeaconColorSensor.green() * 8, robot.leftBeaconColorSensor.blue() * 8, hsv);
 

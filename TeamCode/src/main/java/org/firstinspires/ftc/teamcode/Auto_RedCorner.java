@@ -7,9 +7,9 @@ import com.qualcomm.robotcore.util.ElapsedTime;
  * Created by CrushBots for the 2016-2017 FTC season
  */
 
-@Autonomous(name="Blue Beacons", group="Autonomous")
+@Autonomous(name="Red Corner", group="Autonomous")
 //@Disabled
-public class Auto_BlueBeacons extends Auto_CommonFunctions {
+public class Auto_RedCorner extends Auto_CommonFunctions {
 
     /* Declare OpMode members. */
     private ElapsedTime runtime = new ElapsedTime();
@@ -37,22 +37,10 @@ public class Auto_BlueBeacons extends Auto_CommonFunctions {
         // Step 2: Shoot Balls
         ShootBalls();
 
-        // Step 3: Turn right toward beacons
-        turnRight(12);
+        // Step 3: Turn right toward ramp
+        turnLeft(20);
 
-        // Step 4: Drive to beacons
-        DriveInches(18);
-
-        // Step 5: Turn left so parell with beacons
-        turnLeft(12);
-
-        // Step 6: process beacon
-        ProcessBlueBeacon();
-
-        // Step 7: Drive to next beacons
-        DriveInches(5);
-
-        // Step 8: process beacon
-        ProcessBlueBeacon();
+        // Step 4: Drive onto ramp
+        DriveInches(22);
     }
 }

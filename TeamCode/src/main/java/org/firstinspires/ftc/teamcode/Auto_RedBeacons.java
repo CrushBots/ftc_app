@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 /**
  * Created by CrushBots for the 2016-2017 FTC season
@@ -8,67 +9,50 @@ import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
 @Autonomous(name="Red Beacons", group="Autonomous")
 //@Disabled
-public class Auto_RedBeacons extends CommonFunctions {
+public class Auto_RedBeacons extends Auto_CommonFunctions {
 
-  int state = 0;
+    /* Declare OpMode members. */
+    private ElapsedTime runtime = new ElapsedTime();
 
-  @Override
-  public void loop() {
+    @Override
+    public void runOpMode() {
 
-    switch (state) {
-      case 0:   // Drive forward
-        DriveForwardTime();
+        /* Initialize the drive system variables.
+         * The init() method of the hardware class does all the work here
+         */
+        robot.init(hardwareMap);
 
-        state++;
-        break;
+        // Send telemetry message to signify robot waiting;
+        telemetry.addData("Status", "Ready to run");    //
+        telemetry.update();
 
-      case 1:   // Shoot balls
+        // Wait for the game to start (driver presses PLAY)
+        // Abort this loop is started or stopped.
+        while (!(isStarted() || isStopRequested())) {
+        }
+
+        // Step 1: Drive forward
+        DriveInches(17);
+
+        // Step 2: Shoot Balls
         ShootBalls();
 
-        state++;
-        break;
+        // Step 3: Turn left toward beacons
+        turnLeft(12);
 
-      case 2:   // Turn right towards Beacons
-        DriveForwardTime();
+        // Step 4: Drive to beacons
+        DriveInches(18);
 
-        state++;
-        break;
+        // Step 5: Turn right so parell with beacons
+        turnRight(12);
 
-      case 3:   // Drive forward until Beacon line
-        DriveForwardTime();
+        // Step 6: process beacon
+        ProcessRedBeacon();
 
-        state++;
-        break;
+        // Step 7: Drive to next beacons
+        DriveInches(5);
 
-      case 4:   // Process Beacon
-        DriveForwardTime();
-
-        state++;
-        break;
-
-      case 5:   // Drive forward until Beacon line
-        DriveForwardTime();
-
-        state++;
-        break;
-
-      case 6:   // Process Beacon
-        DriveForwardTime();
-
-        state++;
-        break;
-
-      case 7:   // Turn to ramp
-        DriveForwardTime();
-
-        state++;
-        break;
-
-      case 8:   // Drive onto ramp
-        DriveForwardTime();
-
-        state++;
-        break;
+        // Step 8: process beacon
+        ProcessRedBeacon();
     }
-  }
 }

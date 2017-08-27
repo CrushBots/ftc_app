@@ -1,8 +1,11 @@
 package org.firstinspires.ftc.teamcode;
 
+import android.graphics.Color;
+
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
@@ -17,6 +20,7 @@ public class CommonFunctions extends OpMode
     /* Declare OpMode members. */
     protected ElapsedTime runtime = new ElapsedTime();
     CrushyHardware robot = new CrushyHardware();
+    double shooterPower = 0.0;
 
     /*
      * Code to run ONCE when the driver hits INIT
@@ -50,7 +54,6 @@ public class CommonFunctions extends OpMode
     @Override
     public void loop() {
         telemetry.addData("Status", "Running: " + runtime.toString());
-
     }
 
     /*
@@ -60,41 +63,14 @@ public class CommonFunctions extends OpMode
     public void stop() {
     }
 
-    public void DriveForwardTime () {
-        double speed = -0.5;
-
-        robot.setDrivePower(speed, speed);
-
-        runtime.reset();
-        while (runtime.seconds() < 0.5) {
-            telemetry.addData("Path", "Leg 1: %2.5f S Elapsed", runtime.seconds());
-            telemetry.update();
-        }
-
-        robot.setDrivePower(0, 0);
-    }
-
     public void RampUpShooter () {
-        double shooterPower = 0;
-
-        // Power was .52
-        while (shooterPower < 0.03) {
-            shooterPower = Range.clip(shooterPower + 0.01, 0, 0.03);
-            robot.setShooterPower(shooterPower);
-        }
-        runtime.reset();
-        while (runtime.seconds() < 3.0) {}
+        shooterPower = Range.clip(shooterPower + 0.01, 0, 0.7);
+        robot.setShooterPower(shooterPower);
     }
 
     public void RampDownShooter () {
-        double shooterPower = 0.55;
-
-        while (shooterPower > 0) {
-            shooterPower = Range.clip(shooterPower - 0.05, 0, 0.55);
-            robot.setShooterPower(shooterPower);
-        }
-        runtime.reset();
-        while (runtime.seconds() < 3.0) {}
+        robot.leftShooter.setPower(0.0);
+        robot.rightShooter.setPower(0.0);
     }
 
     public void ShootBall () {
@@ -103,13 +79,4 @@ public class CommonFunctions extends OpMode
         while (runtime.seconds() < .5) {}
         robot.particleCollector.setPower(0.0);
     }
-
-    public void ShootBalls () {
-        RampUpShooter();
-        ShootBall();
-        RampUpShooter();
-        ShootBall();
-        RampDownShooter();
-    }
-
 }

@@ -1,9 +1,13 @@
  package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.hardware.adafruit.BNO055IMU;
+import com.qualcomm.hardware.adafruit.JustLoggingAccelerationIntegrator;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cGyro;
 import com.qualcomm.robotcore.hardware.ColorSensor;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.I2cAddr;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import static java.lang.Thread.sleep;
@@ -23,11 +27,15 @@ import static java.lang.Thread.sleep;
     public DcMotor leftShooter = null;
     public DcMotor rightShooter = null;
     public Servo BeaconArmsServo = null;
-    public ModernRoboticsI2cGyro gyroSensor = null;
     public ColorSensor leftBeaconColorSensor = null;
     public ColorSensor rightBeaconColorSensor = null;
     public ColorSensor leftUnderColorSensor = null;
     public ColorSensor rightUnderColorSensor = null;
+    //public BNO055IMU gyro = null;
+
+    static final double SERVO_MAX_POS     =  1.0;     // Maximum rotational position
+    static final double SERVO_MIN_POS     =  0.0;     // Minimum rotational position
+
 
     /* Local members. */
     HardwareMap hwMap = null;
@@ -35,7 +43,6 @@ import static java.lang.Thread.sleep;
 
     /* Constructor */
     public CrushyHardware(){
-
     }
 
     /* Initialize standard Hardware interfaces */
@@ -55,6 +62,7 @@ import static java.lang.Thread.sleep;
         leftShooter = hwMap.dcMotor.get("leftShooter");
         rightShooter = hwMap.dcMotor.get("rightShooter");
 
+        // Set the direction of the motors to FORWARD or REVERSE
         leftFront.setDirection(DcMotor.Direction.REVERSE);
         leftBack.setDirection(DcMotor.Direction.REVERSE);
         rightFront.setDirection(DcMotor.Direction.FORWARD);
@@ -81,6 +89,7 @@ import static java.lang.Thread.sleep;
         leftShooter.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rightShooter.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
+        // Set all motors to run with or without encoders.
         leftFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         leftBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         rightFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -99,25 +108,36 @@ import static java.lang.Thread.sleep;
          *  Define and set start position on Servos
          */
         BeaconArmsServo = hwMap.servo.get("beaconArms");
-        BeaconArmsServo.setPosition(0.5);
+        //BeaconArmsServo.setPosition(0.5);
 
-        /**
-         *  Define and calibrate the Adafruit IMU (Inertial Motion Unit) sensor
-         */
-        /*gyroSensor = (ModernRoboticsI2cGyro)hwMap.gyroSensor.get("gyro");
-        gyroSensor.calibrate();
-        while(gyroSensor.isCalibrating()){
-            // Wait for calibration to finish
-        }
-        gyroSensor.setHeadingMode(ModernRoboticsI2cGyro.HeadingMode.HEADING_CARDINAL);*/
+        // Set up the parameters with which we will use our IMU. Note that integration
+        // algorithm here just reports accelerations to the logcat log; it doesn't actually
+        // provide positional information.
+        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
+        parameters.angleUnit           = BNO055IMU.AngleUnit.DEGREES;
+        parameters.accelUnit           = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
+        parameters.calibrationDataFile = "AdafruitIMUCalibration.json"; // see the calibration sample opmode
+        parameters.loggingEnabled      = true;
+        parameters.loggingTag          = "gyro";
+        parameters.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
+
+        // Retrieve and initialize the IMU. We expect the IMU to be attached to an I2C port
+        // on a Core Device Interface Module, configured to be a sensor of type "AdaFruit IMU",
+        // and named "imu".
+        //gyro = hwMap.get(BNO055IMU.class, "gyro");
+        //gyro.initialize(parameters);
 
         /**
          *  Define and setup Color sensors
          */
         leftBeaconColorSensor = hwMap.colorSensor.get("leftBeacon");
+        leftBeaconColorSensor.setI2cAddress(I2cAddr.create8bit(0x3c));
         rightBeaconColorSensor = hwMap.colorSensor.get("rightBeacon");
+        rightBeaconColorSensor.setI2cAddress(I2cAddr.create8bit(0x38));
         leftUnderColorSensor = hwMap.colorSensor.get("leftUnder");
+        leftUnderColorSensor.setI2cAddress(I2cAddr.create8bit(0x3e));
         rightUnderColorSensor = hwMap.colorSensor.get("rightUnder");
+        rightUnderColorSensor.setI2cAddress(I2cAddr.create8bit(0x3a));
     }
 
     public void setShooterPower (double power){

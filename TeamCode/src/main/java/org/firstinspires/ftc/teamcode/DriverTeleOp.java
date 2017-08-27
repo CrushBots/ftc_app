@@ -3,6 +3,16 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.Range;
 
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
+import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
+
+import java.util.Locale;
+
+import static org.firstinspires.ftc.teamcode.CrushyHardware.SERVO_MAX_POS;
+import static org.firstinspires.ftc.teamcode.CrushyHardware.SERVO_MIN_POS;
+
 /**
  * Created by CrushBots for the 2016-2017 FTC season
  */
@@ -14,7 +24,7 @@ public class DriverTeleOp extends CommonFunctions {
     /* Declare members. */
     private double speedControl = 0.5;
 
-    private static final double shooterChangePower = 0.05;
+    private static final double shooterChangePower = 0.01;
     private double shooterPower = 0.0;
     private boolean shooterStarted = false;
     private boolean rightBumperIsPressed = false;
@@ -45,7 +55,7 @@ public class DriverTeleOp extends CommonFunctions {
          * Right Bumper - Decrease Speed
          */
         if (gamepad1.right_bumper) {
-                speedControl = 0.15;
+            speedControl = 0.15;
         } else {
             speedControl = 0.5;
         }
@@ -76,7 +86,12 @@ public class DriverTeleOp extends CommonFunctions {
          */
         if (gamepad2.left_bumper)
         {
-            robot.particleCollector.setPower(1.0);
+            if (gamepad2.b) {
+                robot.particleCollector.setPower(-1.0);
+            }
+            else {
+                robot.particleCollector.setPower(1.0);
+            }
         }
         else
         {
@@ -84,15 +99,12 @@ public class DriverTeleOp extends CommonFunctions {
         }
 
         /*
-         * Right Bumper - Shooter        // Step 10:  Pull Beacon Arms In
-        robot.BeaconArmsServo.setPosition(1.0);
-        robot.rightServo.setPosition(0.0);
-
+         * Right Bumper - Shooter
          */
         if (!rightBumperIsPressed && gamepad2.right_bumper)
         {
             // Right Bumper is pressed - start shooter
-            shooterStarted = !shooterStarted;
+           shooterStarted = !shooterStarted;
             rightBumperIsPressed = true;
         }
         else if (rightBumperIsPressed && !gamepad2.right_bumper)
@@ -104,23 +116,19 @@ public class DriverTeleOp extends CommonFunctions {
         if (shooterStarted)
         {
             // Ramp Up the Shooter
-            shooterPower = Range.clip(shooterPower + shooterChangePower, 0, 1.0);
-            robot.leftShooter.setPower(shooterPower);
-            robot.rightShooter.setPower(shooterPower);
+            RampUpShooter ();
         }
         else
         {
             // Ramp Down the Shooter
-            shooterPower = Range.clip(shooterPower - shooterChangePower, 0, 1.0);
-            robot.leftShooter.setPower(shooterPower);
-            robot.rightShooter.setPower(shooterPower);
-        }
+            RampDownShooter();
+       }
 
-        if (gamepad2.b)
-        {
-            robot.leftShooter.setPower(0);
-            robot.rightShooter.setPower(0);
-        }
+        //if (gamepad2.b)
+        //{
+          //  robot.leftShooter.setPower(0);
+          //  robot.rightShooter.setPower(0);
+        //}
 
         /*
          * Left Joy Stick - Move Beacon Arms
@@ -128,12 +136,17 @@ public class DriverTeleOp extends CommonFunctions {
         if (gamepad2.left_stick_y < -0.1)
         {
             // Move arms out
-            robot.BeaconArmsServo.setPosition(0.0);
+            telemetry.addData("Beacon Servo:", "Moving!");
+            robot.BeaconArmsServo.setPosition(SERVO_MIN_POS);
         }
         else if (gamepad2.left_stick_y > 0.1)
         {
             // Move arms in
-            robot.BeaconArmsServo.setPosition(1.0);
+            robot.BeaconArmsServo.setPosition(SERVO_MAX_POS);
+        }
+        else
+        {
+            robot.BeaconArmsServo.setPosition(0.5);
         }
 
         /*
@@ -152,32 +165,19 @@ public class DriverTeleOp extends CommonFunctions {
             //robot.sideBeacon.setPower(0.0);
         }
 
-        /*
-         * Right Bumper - Shooter
-         */
-        if (!rightBumperIsPressed && gamepad2.right_bumper)
-        {
-            // Right Bumper is pressed.
-            shooterStarted = !shooterStarted;
-            rightBumperIsPressed = true;
-        }
-        else if (rightBumperIsPressed && !gamepad2.right_bumper)
-        {
-            // Right Bumper is released.
-            rightBumperIsPressed = false;
-        }
+       // Orientation angles;
 
-        if (shooterStarted)
-        {
-            shooterPower = Range.clip(shooterPower + shooterChangePower, 0, 0.55);
-            robot.leftShooter.setPower(shooterPower);
-            robot.rightShooter.setPower(shooterPower);
-        }
-        else
-        {
-            shooterPower = Range.clip(shooterPower - shooterChangePower, 0, 1.0);
-            robot.leftShooter.setPower(shooterPower);
-            robot.rightShooter.setPower(shooterPower);
-        }
+        //angles = robot.gyro.getAngularOrientation().toAxesReference(AxesReference.INTRINSIC).toAxesOrder(AxesOrder.ZYX);
+
+        //telemetry.addData("Heading:", formatAngle(angles.angleUnit, angles.firstAngle));
     }
+
+    String formatAngle(AngleUnit angleUnit, double angle) {
+        return formatDegrees(AngleUnit.DEGREES.fromUnit(angleUnit, angle));
+    }
+
+    String formatDegrees(double degrees){
+        return String.format(Locale.getDefault(), "%.1f", AngleUnit.DEGREES.normalize(degrees));
+    }
+
 }
